@@ -3,19 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HomeWork JS 11</title>
+    <title>HomeWork JS 12</title>
+
     <link rel="stylesheet" href="./css/styles.css" />
   </head>
   <body>
     <section>
       <form class="form">
         <input type="text" name="search" placeholder="Search images..." />
-        <button type="submit">Search</button>
+        <button class="formbtn" type="submit">Search</button>
       </form>
-      <div class="loader visually-hidden"></div>
     </section>
     <section>
       <ul class="gallery"></ul>
+      <button
+        class="loadmore-btn visually-hidden"
+        type="button"
+        data-action="load-more"
+      >
+        Load more
+      </button>
+      <div class="loader visually-hidden"></div>
     </section>
 
     <script type="module" src="./main.js"></script>
