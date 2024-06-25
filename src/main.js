@@ -135,7 +135,7 @@ function scrollOldElements() {
   const liElem = galleryElem.children[0];
   const height = liElem.getBoundingClientRect().height;
   scrollBy({
-    top: height * 3 + 72,
+    top: height * 3,
     behavior: 'smooth',
   });
 }
