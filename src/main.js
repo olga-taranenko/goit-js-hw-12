@@ -29,19 +29,18 @@ async function onSearchBtnSubmit(event) {
   event.preventDefault();
 
   searchValue = formSearch.elements.search.value.trim();
-  currentPage = 1;
 
   if (searchValue === '') {
     galleryElem.innerHTML = '';
     displayMessage('Please enter data for search', '#ffa000');
-    hideLoadBtn();
     return;
   }
   showLoader();
-
+  hideLoadBtn();
   try {
-    hideLoadBtn();
+    currentPage = 1;
     const data = await searchImages(searchValue, currentPage);
+    maxPage = Math.ceil(data.total / perPage);
 
     if (data.hits.length === 0) {
       galleryElem.innerHTML = '';
@@ -49,13 +48,12 @@ async function onSearchBtnSubmit(event) {
         'Sorry, there are no images matching your search query. Please try again!',
         '#ef4040'
       );
-      hideLoadBtn();
+      hideLoader();
+      updateBtnStatus();
+      return;
     } else {
-      maxPage = Math.ceil(data.total / perPage);
       const markup = imagesTemplate(data.hits);
       galleryElem.innerHTML = markup;
-
-      updateBtnStatus();
 
       lightbox.refresh();
     }
@@ -64,9 +62,8 @@ async function onSearchBtnSubmit(event) {
       'An error occurred while fetching photos. Please try again later.',
       '#EF4040'
     );
-    hideLoadBtn();
   }
-
+  updateBtnStatus();
   hideLoader();
   formSearch.reset();
 }
@@ -74,19 +71,30 @@ async function onSearchBtnSubmit(event) {
 loadMoreBtn.addEventListener('click', async () => {
   currentPage++;
   hideLoadBtn();
-  const data = await searchImages(searchValue, currentPage);
-  const markup = imagesTemplate(data.hits);
-  galleryElem.insertAdjacentHTML('beforeend', markup);
+  showLoader();
+
+  try {
+    const data = await searchImages(searchValue, currentPage);
+    const markup = imagesTemplate(data.hits);
+    galleryElem.insertAdjacentHTML('beforeend', markup);
+    scrollOldElements();
+  } catch (err) {
+    displayMessage(
+      'An error occurred while fetching photos. Please try again later.',
+      '#EF4040'
+    );
+  }
 
   lightbox.refresh();
 
+  hideLoader();
   updateBtnStatus();
 });
 
 function displayMessage(message, color) {
   iziToast.show({
     message: message,
-    position: 'bottomRight',
+    position: 'topRight',
     backgroundColor: color,
     messageColor: '#fff',
     theme: 'dark',
@@ -112,7 +120,22 @@ function hideLoadBtn() {
 function updateBtnStatus() {
   if (currentPage >= maxPage) {
     hideLoadBtn();
+    if (maxPage) {
+      displayMessage(
+        'We are sorry, but you have reached the end of search results.',
+        '#89CFF0'
+      );
+    }
   } else {
     showLoadBtn();
   }
+}
+
+function scrollOldElements() {
+  const liElem = galleryElem.children[0];
+  const height = liElem.getBoundingClientRect().height;
+  scrollBy({
+    top: height * 3 + 72,
+    behavior: 'smooth',
+  });
 }
