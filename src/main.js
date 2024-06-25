@@ -31,6 +31,7 @@ async function onSearchBtnSubmit(event) {
   searchValue = formSearch.elements.search.value.trim();
 
   if (searchValue === '') {
+    hideLoadBtn();
     galleryElem.innerHTML = '';
     displayMessage('Please enter data for search', '#ffa000');
     return;
@@ -50,7 +51,6 @@ async function onSearchBtnSubmit(event) {
       );
       hideLoader();
       updateBtnStatus();
-      return;
     } else {
       const markup = imagesTemplate(data.hits);
       galleryElem.innerHTML = markup;
